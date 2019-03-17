@@ -36,7 +36,6 @@
       </div>
     </div>
     <div v-show="!pageContent">
-      <b-input >
       <b-button @click="getContent" variant="primary" size="lg">Ler!</b-button>
     </div>
   </div>
@@ -79,7 +78,7 @@ export default {
       if (this.page != "") {
         if (checkValidUrl(this.page)) {
           console.log("Valid URL :" + this.page);
-          getPageContent(this);
+          fetchWithAxios(this);
         } else {
           this.pageContent = false;
           this.isLoading = false;
@@ -93,7 +92,8 @@ export default {
   mounted() {},
   methods: {
     getContent() {
-      getPageContent(this);
+      ///getPageContent(this);
+      fetchWithAxios(this);
     }
   }
 };
@@ -101,6 +101,26 @@ function checkValidUrl(url) {
   var validUrl = require("valid-url");
   return validUrl.isUri(url);
 }
+import axios from "axios";
+function fetchWithAxios(app) {
+  axios({ method: "GET", url: app.page }).then(
+    result => {
+      console.log(result)
+      var extractor = require("unfluff");
+      var data = extractor(result.data);
+      app.isLoading = false;
+      app.metadata = data;
+      app.text = data.text.split("\n");
+      console.log(app.metadata);
+      console.log(app.metadata.text);
+
+    },
+    error => {
+      console.error(error);
+    }
+  );
+}
+
 function pageNotFound(app) {
   erro_message = "Nenhuma página foi achada!";
 }
@@ -108,7 +128,10 @@ function getPageContent(app) {
   var request = require("request");
   var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
   var x = new XMLHttpRequest();
-  const proxyurl = "https://thingproxy.freeboard.io/fetch/";
+  console.log(app.page);
+  const proxyurl = "https://yacdn.org/serve/";
+
+  console.log("URL: " + proxyurl + app.page);
   x.open("GET", proxyurl + app.page);
   x.setRequestHeader("X-Requested-With", "XMLHttpRequest");
   x.onreadystatechange = function() {
@@ -125,6 +148,7 @@ function getPageContent(app) {
   x.onload = function() {};
   x.send();
 }
+
 function getQueryPage(app) {
   try {
     return app.$route.query.page;
