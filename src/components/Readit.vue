@@ -102,8 +102,9 @@ function checkValidUrl(url) {
   return validUrl.isUri(url);
 }
 function fetchWithget(app) {
+   const proxyurl = "https://cors-anywhere.herokuapp.com/";
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", app.page, true);
+  xhr.open("GET", proxyurl+app.page, true);
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4) {
       // WARNING! Might be evaluating an evil script!
@@ -125,13 +126,11 @@ function fetchWithAxios(app) {
   const proxyurl = "https://yacdn.org/serve/";
 
   axios
-    .get(proxyurl + app.page, {
+    .get(app.page, {
       method: "GET",
+      responseType: 'text/html',
       headers: {
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
-        "Access-Control-Allow-Headers":
-          "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        "Access-Control-Allow-Headers":"*"
       }
     })
     .then(
