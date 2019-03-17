@@ -36,7 +36,8 @@
       </div>
     </div>
     <div v-show="!pageContent">
-      <b-button @click="getContent">Search</b-button>
+      <b-input >
+      <b-button @click="getContent" variant="primary" size="lg">Ler!</b-button>
     </div>
   </div>
 </template>
