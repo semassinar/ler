@@ -78,7 +78,7 @@ export default {
       if (this.page != "") {
         if (checkValidUrl(this.page)) {
           console.log("Valid URL :" + this.page);
-          fetchWithAxios(this);
+          fetchWithget(this);
         } else {
           this.pageContent = false;
           this.isLoading = false;
@@ -101,24 +101,54 @@ function checkValidUrl(url) {
   var validUrl = require("valid-url");
   return validUrl.isUri(url);
 }
-import axios from "axios";
-function fetchWithAxios(app) {
-  axios({ method: "GET", url: app.page }).then(
-    result => {
-      console.log(result)
+function fetchWithget(app) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", app.page, true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4) {
+      // WARNING! Might be evaluating an evil script!
+      console.log(xhr.responseText);
       var extractor = require("unfluff");
-      var data = extractor(result.data);
+      var data = extractor(xhr.responseText);
       app.isLoading = false;
       app.metadata = data;
       app.text = data.text.split("\n");
       console.log(app.metadata);
       console.log(app.metadata.text);
-
-    },
-    error => {
-      console.error(error);
     }
-  );
+  };
+  xhr.send();
+}
+
+import axios from "axios";
+function fetchWithAxios(app) {
+  const proxyurl = "https://yacdn.org/serve/";
+
+  axios
+    .get(proxyurl + app.page, {
+      method: "GET",
+      headers: {
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT",
+        "Access-Control-Allow-Headers":
+          "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+      }
+    })
+    .then(
+      result => {
+        console.log(result);
+        var extractor = require("unfluff");
+        var data = extractor(result.data);
+        app.isLoading = false;
+        app.metadata = data;
+        app.text = data.text.split("\n");
+        console.log(app.metadata);
+        console.log(app.metadata.text);
+      },
+      error => {
+        console.error(error);
+      }
+    );
 }
 
 function pageNotFound(app) {
