@@ -1,14 +1,36 @@
 <template>
   <div id="app">
-    <img id="logo" src="./assets/logo.png">
+    <img id="logo" src="/assets/logo.png">
 
-    <router-view />
+    <router-view id="readit"/>
+    <v-footer id="footer" light>
+      <v-card flat tile class="indigo lighten-1 white--text text-xs-center">
+        <v-card-text>
+          <br>
+          <v-card-text
+            class="white--text pt-0"
+          >Leia artigos e notícias sem interrupções nem propagandas !</v-card-text>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-text class="white--text">
+          <strong>
+            Leia-me - 2019
+            &copy; Created by GH
+          </strong>
+        </v-card-text>
+      </v-card>
+    </v-footer>
   </div>
 </template>
 
 <script>
 export default {
-  name: "App"
+  name: "App",
+  data() {
+    return {};
+  }
 };
 </script>
 
@@ -19,21 +41,35 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   width: 100%;
   text-align: center;
-  display: inline-block;
+  height: 100%;
+  min-height: 100%;
 }
-#logo{
-
+#logo {
   margin-top: 5%;
   max-width: 340px;
 }
 body {
   text-align: center;
-  size: auto;
-  min-width: 860px;
 }
 nav {
   align-self: auto;
   background-color: #eeae4ab0;
   display: inline;
+}
+#footer {
+  display: inline-block;
+  width: 100%;
+}
+
+#readit {
+  min-height: 30%;
+  margin:12px;
+}
+body,
+html {
+  height: 100%;
+  min-height: 100%;
+  text-align: center;
+  font-family: opensans, helvetica, arial, sans-serif;
 }
 </style>

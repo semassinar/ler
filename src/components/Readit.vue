@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div>
     <div>
       <loading
         id="loading"
@@ -16,26 +16,32 @@
           <div class="container">
             <div class="row">
               <div class="col-lg-8 mx-auto">
-                <h3>{{metadata.publisher}}</h3>
+                <h3>Fonte: {{metadata.publisher}}</h3>
                 <h2 id="titleMetadata">{{metadata.title}}</h2>
                 <img id="imageMetadata" v-bind:src="metadata.image">
                 <br>
-                <p class="lead">{{metadata.description}}</p>
+                <h4>{{metadata.description}}</h4>
 
                 <h6 v-for="(index,tab) in text" :key="tab">{{ index }}</h6>
 
                 <br>
                 <br>
-                <h6
+                <h5
                   v-if="metadata.author != null"
-                >Autor: {{ metadata.author[0]}} - {{metadata.date}}</h6>
+                >Autor: {{ metadata.author[0]}} - {{metadata.date}}</h5>
+                <h5 v-if="metadata.copyright != null">Copyright: {{ metadata.copyright}}</h5>
+                <h5>
+                  <a v-bind:href="page">{{ page}}</a>
+                </h5>
               </div>
             </div>
           </div>
         </section>
       </div>
     </div>
-    <div v-show="!pageContent">
+    <div id="searchDiv" v-show="!pageContent">
+      <b-input v-model="page" placeholder="Cole o link de um artigo ou notícia aqui!!"/>
+      <br>
       <b-button @click="getContent" variant="primary" size="lg">Ler!</b-button>
     </div>
   </div>
@@ -44,7 +50,6 @@
 <script>
 import Router from "@/router/index.js";
 import Loading from "vue-loading-overlay";
-// Import stylesheet
 import unfluff from "unfluff";
 import "vue-loading-overlay/dist/vue-loading.css";
 
@@ -53,7 +58,7 @@ export default {
 
   data() {
     return {
-      msg: "Welcome to Your Vue.js App",
+      msg: "Welcome to the jungle baby! You gonna DIE!",
       page: "",
       erro_message: "",
       isLoading: false,
@@ -77,12 +82,10 @@ export default {
       this.page = getQueryPage(this);
       if (this.page != "") {
         if (checkValidUrl(this.page)) {
-          console.log("Valid URL :" + this.page);
           fetchWithget(this);
         } else {
           this.pageContent = false;
           this.isLoading = false;
-          console.log("Page content false");
         }
       } else {
         goToIndex(this);
@@ -92,8 +95,11 @@ export default {
   mounted() {},
   methods: {
     getContent() {
-      ///getPageContent(this);
-      fetchWithAxios(this);
+      if (checkValidUrl(this.page)) {
+        window.location.href = "/?page=" + this.page;
+      } else {
+        goToIndex();
+      }
     }
   }
 };
@@ -102,87 +108,39 @@ function checkValidUrl(url) {
   return validUrl.isUri(url);
 }
 function fetchWithget(app) {
-   const proxyurl = "https://cors-anywhere.herokuapp.com/";
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", proxyurl+app.page, true);
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4) {
-      // WARNING! Might be evaluating an evil script!
-      console.log(xhr.responseText);
-      var extractor = require("unfluff");
-      var data = extractor(xhr.responseText);
-      app.isLoading = false;
-      app.metadata = data;
-      app.text = data.text.split("\n");
-      console.log(app.metadata);
-      console.log(app.metadata.text);
-    }
-  };
-  xhr.send();
-}
-
-import axios from "axios";
-function fetchWithAxios(app) {
-  const proxyurl = "https://yacdn.org/serve/";
-
-  axios
-    .get(app.page, {
-      method: "GET",
-      responseType: 'text/html',
-      headers: {
-        "Access-Control-Allow-Headers":"*"
-      }
-    })
-    .then(
-      result => {
-        console.log(result);
+  try {
+    const proxyurl = "https://cors-anywhere.herokuapp.com/";
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", proxyurl + app.page, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
         var extractor = require("unfluff");
-        var data = extractor(result.data);
-        app.isLoading = false;
-        app.metadata = data;
-        app.text = data.text.split("\n");
-        console.log(app.metadata);
-        console.log(app.metadata.text);
-      },
-      error => {
-        console.error(error);
+        var data = extractor(xhr.responseText);
+        if (data.text != "") {
+          app.metadata = data;
+          app.text = data.text.split("\n");
+          app.isLoading = false;
+        } else {
+          goToIndex(this);
+          app.isLoading = false;
+        }
       }
-    );
+    };
+    xhr.send();
+  } catch (error) {
+    goToIndex(this);
+    app.isLoading = false;
+  }
 }
 
 function pageNotFound(app) {
   erro_message = "Nenhuma página foi achada!";
-}
-function getPageContent(app) {
-  var request = require("request");
-  var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-  var x = new XMLHttpRequest();
-  console.log(app.page);
-  const proxyurl = "https://yacdn.org/serve/";
-
-  console.log("URL: " + proxyurl + app.page);
-  x.open("GET", proxyurl + app.page);
-  x.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-  x.onreadystatechange = function() {
-    if (x.readyState == 4) {
-      var extractor = require("unfluff");
-      var data = extractor(x.responseText);
-      app.isLoading = false;
-      app.metadata = data;
-      app.text = data.text.split("\n");
-      console.log(app.metadata);
-      console.log(app.metadata.text);
-    }
-  };
-  x.onload = function() {};
-  x.send();
 }
 
 function getQueryPage(app) {
   try {
     return app.$route.query.page;
   } catch (error) {
-    console.log(error);
     return null;
   }
 }
@@ -191,15 +149,12 @@ function goToIndex(app) {
   window.location.href = "/";
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #contentMetadata {
+  text-align: center;
   display: inline-block;
-  font-family: opensans, helvetica, arial, sans-serif;
 }
 #titleMetadata {
-  font-family: opensans, helvetica, arial, sans-serif;
   line-height: 2.25rem;
   letter-spacing: -0.09375rem;
 }
@@ -207,5 +162,8 @@ function goToIndex(app) {
   margin: 13px;
   margin-bottom: 23px;
   max-width: 73%;
+}
+#searchDiv {
+  margin: 120px;
 }
 </style>
