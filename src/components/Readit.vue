@@ -15,12 +15,12 @@
         <section id="services" class="bg-light">
           <div class="container">
             <div class="row">
-              <div class="col-lg-8 mx-auto">
+              <div id="fullContent" class="col-lg-8 mx-auto">
                 <h3>Fonte: {{metadata.publisher}}</h3>
                 <h2 id="titleMetadata">{{metadata.title}}</h2>
                 <img id="imageMetadata" v-bind:src="metadata.image">
                 <br>
-                <h4>{{metadata.description}}</h4>
+                <h3>{{metadata.description}}</h3>
 
                 <h6 v-for="(index,tab) in text" :key="tab">{{ index }}</h6>
 
@@ -31,7 +31,7 @@
                 >Autor: {{ metadata.author[0]}} - {{metadata.date}}</h5>
                 <h5 v-if="metadata.copyright != null">Copyright: {{ metadata.copyright}}</h5>
                 <h5>
-                  <a target="_blank" v-bind:href="page">{{ page}}</a>
+                  <a target="_blank" v-bind:href="page">{{page}}</a>
                 </h5>
               </div>
             </div>
@@ -51,7 +51,34 @@
     </div>
   </div>
 </template>
-
+<style scoped>
+#contentMetadata {
+  text-align: center;
+  display: inline-block;
+}
+#titleMetadata {
+  line-height: 2.25rem;
+  letter-spacing: -0.09375rem;
+}
+#imageMetadata {
+  margin: 13px;
+  margin-bottom: 23px;
+  max-width: 73%;
+}
+#searchDiv {
+  margin: 120px;
+}
+#buttonSearch {
+  width: 120px;
+}
+#fullContent {
+  min-width: 90%;
+}
+h6,
+.h6 {
+  font-size: 2ch;
+}
+</style>
 <script>
 import Router from "@/router/index.js";
 import Loading from "vue-loading-overlay";
@@ -114,10 +141,30 @@ export default {
       } else {
         showErro(this);
       }
+    },
+    search() {
+      try {
+        this.isLoading = true;
+        if (this.page != "") {
+          if (checkValidUrl(this.page)) {
+            fetchWithget(this);
+          } else {
+            if (this.page != null) {
+              showErro(this);
+            }
+            this.pageContent = false;
+            this.isLoading = false;
+          }
+        } else {
+          showErro(this);
+          goToIndex(this);
+        }
+      } catch (error) {
+        showErro(this);
+      }
     }
   }
 };
-function invalidUrl(app) {}
 
 function showErro(app) {
   app.invalid_url = true;
@@ -151,7 +198,6 @@ function fetchWithget(app) {
           showErro(app);
           app.isLoading = false;
           app.pageContent = false;
-
         }
       }
     };
@@ -173,24 +219,4 @@ function goToIndex(app) {
   window.location.href = "/ler/";
 }
 </script>
-<style scoped>
-#contentMetadata {
-  text-align: center;
-  display: inline-block;
-}
-#titleMetadata {
-  line-height: 2.25rem;
-  letter-spacing: -0.09375rem;
-}
-#imageMetadata {
-  margin: 13px;
-  margin-bottom: 23px;
-  max-width: 73%;
-}
-#searchDiv {
-  margin: 120px;
-}
-#buttonSearch {
-  width: 120px;
-}
-</style>
+
