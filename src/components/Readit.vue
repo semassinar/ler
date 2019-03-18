@@ -40,9 +40,13 @@
       </div>
     </div>
     <div id="searchDiv" v-show="!pageContent">
-      <b-input v-model="page" placeholder="Cole o link de um artigo ou notícia aqui!!"/>
+      <b-form-input
+        :state="erro_message"
+        v-model="page"
+        placeholder="Cole o link de um artigo ou notícia aqui!!"
+      />
       <br>
-      <b-button @click="getContent" variant="primary" size="lg">Ler!</b-button>
+      <b-button id="buttonSearch" @click="getContent" variant="primary" size="md">Ler!</b-button>
     </div>
   </div>
 </template>
@@ -60,7 +64,7 @@ export default {
     return {
       msg: "Welcome to the jungle baby! You gonna DIE!",
       page: "",
-      erro_message: "",
+      erro_message: null,
       isLoading: false,
       fullPage: false,
       loader: "bars",
@@ -84,25 +88,41 @@ export default {
         if (checkValidUrl(this.page)) {
           fetchWithget(this);
         } else {
+          showErro(this);
           this.pageContent = false;
           this.isLoading = false;
         }
       } else {
+        showErro(this);
         goToIndex(this);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Err");
+      showErro(this);
+    }
   },
-  mounted() {},
+  mounted() {
+    this.erro_message = null;
+  },
   methods: {
     getContent() {
       if (checkValidUrl(this.page)) {
         window.location.href = "/ler/?page=" + this.page;
       } else {
-        goToIndex(this);
+        showErro(this);
       }
     }
   }
 };
+
+function showErro(app) {
+  app.isLoading = false;
+  app.page = "";
+  app.erro_message = false;
+  setTimeout(() => {
+    app.erro_message = null;
+  }, 2500);
+}
 function checkValidUrl(url) {
   var validUrl = require("valid-url");
   return validUrl.isUri(url);
@@ -121,6 +141,7 @@ function fetchWithget(app) {
           app.text = data.text.split("\n");
           app.isLoading = false;
           app.pageContent = true;
+          console.log(data);
         } else {
           goToIndex(this);
           app.isLoading = false;
@@ -134,11 +155,6 @@ function fetchWithget(app) {
     app.isLoading = false;
   }
 }
-
-function pageNotFound(app) {
-  erro_message = "Nenhuma página foi achada!";
-}
-
 function getQueryPage(app) {
   try {
     return app.$route.query.page;
@@ -149,7 +165,6 @@ function getQueryPage(app) {
 function goToIndex(app) {
   app.isLoading = false;
   window.location.href = "/ler/";
-
 }
 </script>
 <style scoped>
@@ -168,5 +183,8 @@ function goToIndex(app) {
 }
 #searchDiv {
   margin: 120px;
+}
+#buttonSearch {
+  width: 120px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img id="logo" href="#" src="/ler/static/logo.png">
+    <img id="logo" @click="gotoIndex" v-bind:src="logoSrc">
 
     <router-view id="readit"/>
     <v-footer id="footer" light>
@@ -29,7 +29,21 @@
 export default {
   name: "App",
   data() {
-    return {};
+    return {
+      logoSrc: "/ler/static/logo.png"
+    };
+  },
+  methods: {
+    gotoIndex() {
+      window.location.href = "/ler/";
+    }
+  },
+  mounted() {
+    if (window.location.href.indexOf("github") > -1) {
+      this.logoSrc = "/ler/static/logo.png";
+    } else {
+      this.logoSrc = "/static/logo.png";
+    }
   }
 };
 </script>
