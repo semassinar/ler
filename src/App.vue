@@ -19,6 +19,7 @@
             Leia-me - 2019
             Created by GH
           </strong>
+          <br>Donate BTC: 3CsxEqPvSSjKrabmBwpmxmyBvLZVhcsroR
         </v-card-text>
       </v-card>
     </v-footer>
