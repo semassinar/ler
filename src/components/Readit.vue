@@ -148,7 +148,8 @@ function getQueryPage(app) {
 }
 function goToIndex(app) {
   app.isLoading = false;
-  window.location.href = "/";
+  window.location.href = "/ler/";
+
 }
 </script>
 <style scoped>
