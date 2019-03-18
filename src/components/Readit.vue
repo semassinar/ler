@@ -40,6 +40,7 @@
       </div>
     </div>
     <div id="searchDiv" v-show="!pageContent">
+      <b-alert :show="invalid_url" variant="danger">Invalid url!</b-alert>
       <b-form-input
         :state="erro_message"
         v-model="page"
@@ -64,6 +65,7 @@ export default {
     return {
       msg: "Welcome to the jungle baby! You gonna DIE!",
       page: "",
+      invalid_url: false,
       erro_message: null,
       isLoading: false,
       fullPage: false,
@@ -88,7 +90,9 @@ export default {
         if (checkValidUrl(this.page)) {
           fetchWithget(this);
         } else {
-          showErro(this);
+          if (this.page != null) {
+            showErro(this);
+          }
           this.pageContent = false;
           this.isLoading = false;
         }
@@ -97,7 +101,6 @@ export default {
         goToIndex(this);
       }
     } catch (error) {
-      console.log("Err");
       showErro(this);
     }
   },
@@ -114,12 +117,15 @@ export default {
     }
   }
 };
+function invalidUrl(app) {}
 
 function showErro(app) {
+  app.invalid_url = true;
   app.isLoading = false;
   app.page = "";
   app.erro_message = false;
   setTimeout(() => {
+    app.invalid_url = false;
     app.erro_message = null;
   }, 2500);
 }
@@ -141,11 +147,11 @@ function fetchWithget(app) {
           app.text = data.text.split("\n");
           app.isLoading = false;
           app.pageContent = true;
-          console.log(data);
         } else {
-          goToIndex(this);
+          showErro(app);
           app.isLoading = false;
           app.pageContent = false;
+
         }
       }
     };
