@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img id="logo" href="#" src="static/logo.png">
+    <img id="logo" href="#" src="/static/logo.png">
 
     <router-view id="readit"/>
     <v-footer id="footer" light>
