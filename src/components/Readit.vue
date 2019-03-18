@@ -96,7 +96,7 @@ export default {
   methods: {
     getContent() {
       if (checkValidUrl(this.page)) {
-        window.location.href = "/?page=" + this.page;
+        window.location.href = "/ler/?page=" + this.page;
       } else {
         goToIndex();
       }
