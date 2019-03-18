@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img id="logo" src="/assets/logo.png">
+    <img id="logo" href="#" src="/static/logo.png">
 
     <router-view id="readit"/>
     <v-footer id="footer" light>
@@ -17,7 +17,7 @@
         <v-card-text class="white--text">
           <strong>
             Leia-me - 2019
-            &copy; Created by GH
+            Created by GH
           </strong>
         </v-card-text>
       </v-card>
@@ -63,7 +63,7 @@ nav {
 
 #readit {
   min-height: 30%;
-  margin:12px;
+  margin: 12px;
 }
 body,
 html {

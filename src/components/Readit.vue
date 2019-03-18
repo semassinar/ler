@@ -31,7 +31,7 @@
                 >Autor: {{ metadata.author[0]}} - {{metadata.date}}</h5>
                 <h5 v-if="metadata.copyright != null">Copyright: {{ metadata.copyright}}</h5>
                 <h5>
-                  <a v-bind:href="page">{{ page}}</a>
+                  <a target="_blank" v-bind:href="page">{{ page}}</a>
                 </h5>
               </div>
             </div>
@@ -68,7 +68,7 @@ export default {
       bgColor: "#ffffff",
       height: 38,
       width: 38,
-      pageContent: true,
+      pageContent: false,
       metadata: {},
       text: []
     };
@@ -120,9 +120,11 @@ function fetchWithget(app) {
           app.metadata = data;
           app.text = data.text.split("\n");
           app.isLoading = false;
+          app.pageContent = true;
         } else {
           goToIndex(this);
           app.isLoading = false;
+          app.pageContent = false;
         }
       }
     };
