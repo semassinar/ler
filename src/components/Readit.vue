@@ -33,6 +33,14 @@
                 <h5>
                   <a target="_blank" v-bind:href="page">{{page}}</a>
                 </h5>
+
+                <div class="fb-share-button" data-layout="button_count" data-size="large">
+                  <a
+                    target="_blank"
+                    href="https://www.facebook.com/sharer/sharer.php?u&amp;src=sdkpreparse"
+                    class="fb-xfbml-parse-ignore"
+                  >Compartilhar</a>
+                </div>
               </div>
             </div>
           </div>
@@ -92,6 +100,7 @@ export default {
     return {
       msg: "Welcome to the jungle baby! You gonna DIE!",
       page: "",
+      fullUrl: "",
       invalid_url: false,
       erro_message: null,
       isLoading: false,
@@ -194,6 +203,10 @@ function fetchWithget(app) {
           app.text = data.text.split("\n");
           app.isLoading = false;
           app.pageContent = true;
+          app.fullUrl =
+            "https://www.facebook.com/sharer/sharer.php?u=" +
+            window.location.href +
+            "%2Fdocs%2Fplugins%2F&amp;src=sdkpreparse";
         } else {
           showErro(app);
           app.isLoading = false;
